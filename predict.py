@@ -42,7 +42,8 @@ def to_frame(img_path, infer_result, conf_th = CONF_TH):
     
     # 필터링 하는 코드 
     bboxes = bboxes[conf_th <= bboxes[:,4]]
-    bboxes = bboxes[bboxes[:,4].argsort()][-TOP_N:,:]
+    bboxes = bboxes[bboxes[:,4].argsort()]
+    bboxes = bboxes[-TOP_N:,:]
     #min_filter
     bboxes_idx = []
     for i, box in enumerate(bboxes):
