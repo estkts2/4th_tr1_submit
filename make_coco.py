@@ -6,6 +6,7 @@ import imagesize
 from pathlib import Path
 from tqdm.auto import tqdm
 
+# 빈 ms coco 포멧 생성 
 def get_empty_data_():
     return  dict(
         info=dict(description=None, url=None, version=None, 
@@ -47,7 +48,7 @@ def to_json_format(img_base_dir, img_list):
         pass
     shutil.rmtree(ln_img_prefix, ignore_errors=True)
     
-    # aliasing
+    # aliasing: image base 를 절대 경로로 하드코딩해 놨기 때문에 입력 패러미터로 받은 경로를 절대 경로로 리네임 해 놔야 된다.
     cmd = f'ln -s {img_base_dir} {ln_img_prefix}'
     os.system(cmd)
     
