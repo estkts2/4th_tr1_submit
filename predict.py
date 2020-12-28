@@ -75,7 +75,7 @@ def main():
     # launcher tool을 이용한 실행
     out_pickle_path = '/aichallenge/temp_dir/launch_test.pickle'
     lt.run_test(config_file, checkpoint_file, 
-                out_pickle_path, GPU_ORDER)
+                out_pickle_path)
     
     # 결과 로드
     df = pd.read_pickle(out_pickle_path)
