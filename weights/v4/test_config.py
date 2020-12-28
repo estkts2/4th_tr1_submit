@@ -3,9 +3,9 @@ model = dict(
     pretrained = None
 )
 data = dict(
+    workers_per_gpu = 1,
     test = dict(
         samples_per_gpu = 12,
-        workers_per_gpu = 1,
         ann_file   = '/aichallenge/temp_dir/4th_anno.json',
         img_prefix = '/aichallenge/temp_dir/4th_dataset',
         pipeline=[
