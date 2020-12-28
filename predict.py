@@ -13,16 +13,18 @@ from tqdm.auto import tqdm
 import make_coco
 import launch_tool as lt
 
+BASE      = '/aichallenge'
+config_file     = f'{BASE}/weights/v4/test_config.py'
+checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
+
 TOP_N = 5
 FPS = 5
 MIN_SIZE = 30 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
-config_file     = f'{BASE}/weights/v4/test_config.py'
-checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TEAM_ID   = 'U0000000217'
-BASE      = '/aichallenge'
 SAVE_PATH = f'{BASE}/t1_res_{TEAM_ID}.json'
+
 
 def to_frame(img_path, infer_result, conf_th = 0.0):
     
