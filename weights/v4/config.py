@@ -10,6 +10,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
+    # 훈련 시에는 작은 객체도 찾게 하기위해 resize augmentation을 한다. 
     dict(
         type='Resize',
         img_scale=[(1920, 1080), (960, 540)],
