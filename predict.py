@@ -12,20 +12,19 @@ from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 from tqdm.auto import tqdm
 
 FPS = 5
-TEAM_ID   = 'est_kts2'
+TEAM_ID   = 'U0000000217'
 BASE      = '/aichallenge'
-#DATA_ROOT = '/dataset/4th_track1/'
+TOP_N = 5
 
-#MIN_SIZE=31 # 규정은 32px 이지만 안전을 위해 31로 설정
-MIN_SIZE=0 # 이전 코드와의 비교를 위해 세팅 안하는 코드
+MIN_SIZE=30 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 SAVE_PATH = f'./t1_res_{TEAM_ID}.json'
 SAVE_PATH2 = f'{BASE}/t1_res_{TEAM_ID}.json'
 
 no_exception = True
 
-config_file     = f'{BASE}/weights/f0f1f2f3f41f42_sgd_0.00075_warm_1000/vfnet_r2_101_fpn_mdconv_c3-c5_mstrain_2x_coco.py'
-checkpoint_file = f'{BASE}/weights/f0f1f2f3f41f42_sgd_0.00075_warm_1000/epoch_14.pth'
+config_file     = f'{BASE}/weights/v4/config.py'
+checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 def to_frame(img_path, infer_result, conf_th = 0.0):
     bboxes = np.vstack(infer_result)
@@ -35,7 +34,7 @@ def to_frame(img_path, infer_result, conf_th = 0.0):
     
     # 필터링 하는 코드 
     bboxes = bboxes[conf_th <= bboxes[:,4]]
-    bboxes = bboxes[bboxes[:,4].argsort()][-2:,:]
+    bboxes = bboxes[bboxes[:,4].argsort()][-TOP_N:,:]
     #min_filter
     bboxes_idx = []
     for i, box in enumerate(bboxes):
@@ -51,7 +50,7 @@ def to_frame(img_path, infer_result, conf_th = 0.0):
         conf = bbox[4]
         return Dict(position=box, confidence_score=str(conf))
         
-    boxes = [to_box(bbox) for bbox in bboxes]
+    boxes = [to_box(bbox) for bbox in bboxes[::-1]] # 혹시나 몰라서 conf가 높은 것을 앞에 적어 줌
     return Dict(file_name=Path(img_path).name, box=boxes)
 
        
