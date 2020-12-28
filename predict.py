@@ -18,7 +18,7 @@ config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TOP_N = 5
-FPS = 0.75 
+FPS = 7.5 
 MIN_SIZE = 30 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 CONF_TH = 0.0
