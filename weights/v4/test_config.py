@@ -32,5 +32,5 @@ test_cfg = dict(
     nms_pre=1000,
     min_bbox_size=0,
     score_thr=0.05,
-    nms=dict(type='nms', iou_threshold=0.80),
+    nms=dict(type='nms', iou_threshold=0.80), # iou 가 높을수록 recall 이높아짐
     max_per_img=100)
