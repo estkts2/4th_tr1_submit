@@ -1,6 +1,8 @@
 _base_ = [
-    '../_base_/datasets/coco_detection.py',
-    '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
+    #'../_base_/datasets/coco_detection.py',
+    '../_base_/datasets/4th_tr1_detection.py',
+    '../_base_/schedules/schedule_1x.py', 
+    '../_base_/default_runtime.py'
 ]
 # model settings
 model = dict(
@@ -26,7 +28,8 @@ model = dict(
         relu_before_extra_convs=True),
     bbox_head=dict(
         type='VFNetHead',
-        num_classes=80,
+        #num_classes=80,
+        num_classes=2,
         in_channels=256,
         stacked_convs=3,
         feat_channels=256,
@@ -66,7 +69,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    dict(type='Resize', img_scale=(1920,1080), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
@@ -77,7 +80,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1333, 800),
+        img_scale=(1920, 1080),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -90,8 +93,8 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=2,
+    samples_per_gpu=8,
+    workers_per_gpu=4,
     train=dict(pipeline=train_pipeline),
     val=dict(pipeline=test_pipeline),
     test=dict(pipeline=test_pipeline))
@@ -110,6 +113,6 @@ lr_config = dict(
 total_epochs = 12
 
 # runtime
-load_from = None
+load_from =  None
 resume_from = None
 workflow = [('train', 1)]
