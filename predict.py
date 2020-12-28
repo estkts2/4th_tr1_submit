@@ -98,7 +98,7 @@ def main():
     anno = Dict(annotations=frame_results)
     with open(SAVE_PATH, 'w') as f: 
         json.dump(anno, f)
-    print('success  SAVE_PATH)
+    print('success  SAVE_PATH')
     
 if __name__ == '__main__':
     main()
