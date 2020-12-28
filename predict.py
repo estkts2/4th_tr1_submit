@@ -52,15 +52,17 @@ def to_frame(img_path, infer_result, conf_th = CONF_TH):
             bboxes_idx.append(i)
     bboxes = bboxes[bboxes_idx]
        
+    conf_sum = 0
     
     # 형식 변환하는 코드
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
         conf = bbox[4]
+        conf_sum += conf
         return Dict(position=box, confidence_score=str(conf))
         
     boxes = [to_box(bbox) for bbox in bboxes[::-1]] # 혹시나 몰라서 conf가 높은 것을 앞에 적어 줌
-    return Dict(file_name=Path(img_path).name, box=boxes)
+    return Dict(file_name=Path(img_path).name, box=boxes), conf_sum
 
        
 def main():
@@ -93,17 +95,29 @@ def main():
     videos = sorted(glob(f'{data_root}/*'))
     
     frame_results = []
+    conf_sums =[] 
     for video in videos:
+        conf_sum = 0
         frames = sorted(glob(f'{video}/*.jpg'))
         prev_result = Dict(file_name='dummy', box=[])
         for f in frames:
             f = Path(f).name
             if f in results_dict:
-                prev_result = to_frame(f, results_dict[f])
+                prev_result, conf = to_frame(f, results_dict[f])
+                conf_sum += conf
                 frame_results.append(prev_result)
             else:
                 t = Dict(file_name=f, box=prev_result['box'])
                 frame_results.append(t)
+        conf_sums.append((conf_sum, f))
+    conf_sums = sorted(conf_sums)[:30]
+    print(conf_sums)
+    for _, file_name in conf_sums:
+        for e in frame_results:
+            if e['file_name'] == file_name:
+                e[box]=[]
+            break
+    
                 
     anno = Dict(annotations=frame_results)
     with open(SAVE_PATH, 'w') as f: 
