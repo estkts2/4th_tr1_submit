@@ -21,12 +21,16 @@ TOP_N = 5
 FPS = 5
 MIN_SIZE = 30 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
+CONF_TH = 0.0
+
+print(f'fps({FPS})_topn({TOP_N})_th({CONF_TH:.2f})_minpx({MIN_SIZE})')
+
 
 TEAM_ID   = 'U0000000217'
 SAVE_PATH = f'{BASE}/t1_res_{TEAM_ID}.json'
 
 
-def to_frame(img_path, infer_result, conf_th = 0.0):
+def to_frame(img_path, infer_result, conf_th = CONF_TH):
     
     def nms(r):
         return r[0]
