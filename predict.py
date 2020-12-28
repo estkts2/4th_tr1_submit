@@ -2,38 +2,27 @@ from glob import glob
 import os, sys
 import json
 from pathlib import Path
-import random
 from collections import OrderedDict as Dict
-import shutil
 
 os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 import pandas as pd
 import numpy as np
-from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 from tqdm.auto import tqdm
 
 import make_coco
 import launch_tool as lt
 
-
-FPS = 5
-TEAM_ID   = 'U0000000217'
-BASE      = '/aichallenge'
 TOP_N = 5
-
-MIN_SIZE=30 # 규정은 32px 이지만 안전을 위해 30으로 설정
-
-SAVE_PATH = f'./t1_res_{TEAM_ID}.json'
-SAVE_PATH2 = f'{BASE}/t1_res_{TEAM_ID}.json'
-
-no_exception = True
-NUM_GPU = 1
+FPS = 5
+MIN_SIZE = 30 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
-
+TEAM_ID   = 'U0000000217'
+BASE      = '/aichallenge'
+SAVE_PATH = f'{BASE}/t1_res_{TEAM_ID}.json'
 
 def to_frame(img_path, infer_result, conf_th = 0.0):
     
@@ -84,13 +73,11 @@ def main():
     # launcher tool을 이용한 실행
     out_pickle_path = '/aichallenge/temp_dir/launch_test.pickle'
     lt.run_test(config_file, checkpoint_file, 
-                out_pickle_path, NUM_GPU)
+                out_pickle_path, GPU_ORDER)
     
     # 결과 로드
     df = pd.read_pickle(out_pickle_path)
     pairs = list(zip(anno['images'], df))
-    results = [[Path(img['file_name']).name, bboxes] for img, bboxes in pairs]
-
     results_dict = {Path(img['file_name']).name: bboxes for img, bboxes in pairs}
     
     videos = sorted(glob(f'{data_root}/*'))
@@ -109,21 +96,9 @@ def main():
                 frame_results.append(t)
                 
     anno = Dict(annotations=frame_results)
-         
-    try:
-        with open(SAVE_PATH, 'w') as f:
-            json.dump(anno, f)
-        print('success ' if no_exception else 'fail!!', SAVE_PATH)
-    except: 
-        print('save fail', SAVE_PATH)
-        
-    try:
-        with open(SAVE_PATH2, 'w') as f:
-            json.dump(anno, f)
-        print('success ' if no_exception else 'fail!!', SAVE_PATH2)
-    except:
-        print('save fail', SAVE_PATH2)
-    
+    with open(SAVE_PATH, 'w') as f: 
+        json.dump(anno, f)
+    print('success  SAVE_PATH)
     
 if __name__ == '__main__':
     main()
