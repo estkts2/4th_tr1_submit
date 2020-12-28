@@ -49,7 +49,7 @@ data = dict(
     workers_per_gpu=1,
     train=dict(
         type='CocoDataset',
-        classes=['swoon', 'dummy'],
+        classes=['swoon', 'dummy'], # 0번 클래스는  실신 클래스 , 1번 클래스는 실신하기 전 상태인 더미 클래스
         ann_file=
         '/home/kts123/gc2020/fixed_di/train_f01_f02_f03_f041_f042_f06_f07_f08.json',
         img_prefix=
