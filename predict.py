@@ -105,7 +105,7 @@ def main():
     with open(SAVE_PATH, 'w') as f: 
         json.dump(anno, f)
     print('success  SAVE_PATH')
-    print(f'fps({FPS})_std({STD})_th({CONF_THR:.2f})_minpx({MIN_SIZE})_minps({MIN_PERSON})')
+    print(f'fps({FPS})_topn({TOP_N})_th({CONF_TH:.2f})_minpx({MIN_SIZE})')
     
 if __name__ == '__main__':
     main()
