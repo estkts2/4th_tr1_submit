@@ -1,10 +1,12 @@
 from glob import glob
-import sys
+import os, sys
 import json
 from pathlib import Path
 import random
 from collections import OrderedDict as Dict
 import shutil
+
+os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 import pandas as pd
 import numpy as np
@@ -30,6 +32,8 @@ NUM_GPU = 1
 
 config_file     = f'{BASE}/weights/v4/config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
+
+
 
 def to_frame(img_path, infer_result, conf_th = 0.0):
     
