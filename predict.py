@@ -23,14 +23,14 @@ no_exception = True
 config_file     = f'{BASE}/weights/f0f1f2f3f41f42_sgd_0.00075_warm_1000/vfnet_r2_101_fpn_mdconv_c3-c5_mstrain_2x_coco.py'
 checkpoint_file = f'{BASE}/weights/f0f1f2f3f41f42_sgd_0.00075_warm_1000/epoch_14.pth'
 
-def to_frame(img_path, infer_result, conf_th = 0.8):
+def to_frame(img_path, infer_result, conf_th = 0.0):
     bboxes = np.vstack(infer_result)
     if len(bboxes) == 0:
         return Dict(file_name=Path(img_path).name, box=[])
     
     
     bboxes = bboxes[conf_th <= bboxes[:,4]]
-    bboxes = bboxes[bboxes[:,4].argsort()][-1:,:]
+    bboxes = bboxes[bboxes[:,4].argsort()][-2:,:]
     
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
@@ -47,7 +47,7 @@ def main():
     model = init_detector(config_file, checkpoint_file, device='cuda:0')
     print('init success')
     
-    fps = 1
+    fps = 3
     stride = int(round(15/fps))
     total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
     sample_imgs = total_imgs[::stride]
