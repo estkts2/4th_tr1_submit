@@ -78,7 +78,7 @@ def main():
     anno, anno_path, img_base  = make_coco.to_json_format(data_root, sample_imgs)
 
     # launcher tool을 이용한 실행
-    out_pickle_path = '/aichallenge/temp_dir/aunch_test.pickle'
+    out_pickle_path = '/aichallenge/temp_dir/launch_test.pickle'
     lt.run_test(config_file, checkpoint_file, 
                 out_pickle_path, NUM_GPU)
     
