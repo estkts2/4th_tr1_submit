@@ -11,9 +11,13 @@ import numpy as np
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 from tqdm.auto import tqdm
 
+FPS = 5
 TEAM_ID   = 'est_kts2'
 BASE      = '/aichallenge'
 #DATA_ROOT = '/dataset/4th_track1/'
+
+#MIN_SIZE=31 # 규정은 32px 이지만 안전을 위해 31로 설정
+MIN_SIZE=0 # 이전 코드와의 비교를 위해 세팅 안하는 코드
 
 SAVE_PATH = f'./t1_res_{TEAM_ID}.json'
 SAVE_PATH2 = f'{BASE}/t1_res_{TEAM_ID}.json'
@@ -29,9 +33,19 @@ def to_frame(img_path, infer_result, conf_th = 0.0):
         return Dict(file_name=Path(img_path).name, box=[])
     
     
+    # 필터링 하는 코드 
     bboxes = bboxes[conf_th <= bboxes[:,4]]
     bboxes = bboxes[bboxes[:,4].argsort()][-2:,:]
+    #min_filter
+    bboxes_idx = []
+    for i, box in enumerate(bboxes):
+        x1, y1, x2, y2, c = box
+        if MIN_SIZE <= (x2-x1+1) and MIN_SIZE <= (y2-y1+1):
+            bboxes_idx.append(i)
+    bboxes = bboxes[bboxes_idx]
+       
     
+    # 형식 변환하는 코드
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
         conf = bbox[4]
@@ -47,8 +61,7 @@ def main():
     model = init_detector(config_file, checkpoint_file, device='cuda:0')
     print('init success')
     
-    fps = 3
-    stride = int(round(15/fps))
+    stride = int(round(15/FPS))
     total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
     sample_imgs = total_imgs[::stride]
     print(f'len(total):{len(total_imgs)}')
