@@ -31,7 +31,7 @@ def to_frame(img_path, infer_result, conf_th = 0.0):
     def nms(r):
         return r[0]
     
-    bboxes = nms(iner_result)
+    bboxes = nms(infer_result)
     if len(bboxes) == 0:
         return Dict(file_name=Path(img_path).name, box=[])
     
@@ -63,13 +63,15 @@ def main():
     
     model = init_detector(config_file, checkpoint_file, device='cuda:0')
     print('init success')
+    print('config_file:', config_file)
+    print('checkpoint_file:', checkpoint_file)
     
     stride = int(round(15/FPS))
     total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
     sample_imgs = total_imgs[::stride]
     print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
-    print(f'stride:{len(total_imgs)/len(sample_imgs)}')
+    print(f'top_{TOP_N}, {FPS}fps, min_size:{MIN_SIZE}')
     
     sample_results = []
     
