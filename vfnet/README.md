@@ -23,8 +23,6 @@ In this work, we propose to learn IoU-aware classification scores (**IACS**) tha
 
 
 ## Updates
-- **2020.12.24** We release a new [VFNetX](#vfnetx) model that can achieve a single-model single-scale **55.1 AP** on COCO test-dev at 4.2 FPS.
-- **2020.12.02** Update to MMDetection v2.7.0
 - **2020.10.29** VarifocalNet has been merged into [the official MMDetection repo](https://github.com/open-mmlab/mmdetection/tree/master/configs/vfnet). Many thanks to [@yhcao6](https://github.com/yhcao6), [@RyanXLi](https://github.com/RyanXLi) and [@hellock](https://github.com/hellock)!
 
 - **2020.10.29** This repo has been refactored so that users can pull the latest updates from the upstream official MMDetection repo. The previous one can be found in the `old` branch.
@@ -34,7 +32,7 @@ In this work, we propose to learn IoU-aware classification scores (**IACS**) tha
 ## Installation
 - This VarifocalNet implementation is based on [MMDetection](https://github.com/open-mmlab/mmdetection). Therefore the installation is the same as original MMDetection.
 
-- Please check [get_started.md](docs/get_started.md) for installation. Note that you should change the version of PyTorch and CUDA to yours when installing **mmcv** (version of 1.1.5 is recommended) in `step 3` and clone this repo instead of MMdetection in `step 4`.
+- Please check [INSTALL.md](docs/install.md) for installation. Note that you should change the version of PyTorch and CUDA to yours when installing **mmcv** (version of 1.1.5 is recommended) in `step c`.
 
 - If you run into problems with `pycocotools`, please install it by:
 
@@ -53,10 +51,10 @@ Once the installation is done, you can follow the steps below to run a quick dem
   and you should see an image with detections.
 
 ## Getting Started
-Please see [1_exist_data_model.md](docs/1_exist_data_model.md) for the basic usage of MMDetection.
+Please see [get_started.md](docs/get_started.md) for the basic usage of MMDetection.
 They also provide [colab tutorial](demo/MMDet_Tutorial.ipynb) for beginners.
 
-For trouble shooting, please refer to [faq.md](docs/faq.md)
+For trouble shooting, please refer to [trouble_shooting.md](docs/trouble_shooting.md)
 
 
 ## Results and Models
@@ -77,6 +75,7 @@ For your convenience, we provide the following trained models. These models are 
 | X-101-64x4d  | pytorch   | Y       | Y             | 2x           |  6.7               | 50.4              | 50.8                   | [model](https://drive.google.com/file/d/1GkyJirn8J10TTyWiyw5C4boKWlW9epSU/view?usp=sharing) &#124; [log](https://drive.google.com/file/d/1ZPPiX1KhT6D48OPSOnPPGa9NqPa4HePG/view?usp=sharing)|
 | R2-101       | pytorch   | N       | Y             | 2x           | 13.0               | 49.2              | 49.3                   | [model](https://drive.google.com/file/d/1E4o1CxaWUQV7-HAyqbITw7JD8mOF7tNW/view?usp=sharing) &#124; [log](https://drive.google.com/file/d/1ESnWn7nXRJVcqQb5OjH3c6XM8Rqc4shI/view?usp=sharing)|
 | R2-101       | pytorch   | Y       | Y             | 2x           | 10.3               | 51.1              | 51.3                   | [model](https://drive.google.com/file/d/1kCiEqAA_VQlhbiNuZ3HWGhBD1JvVpK0c/view?usp=sharing) &#124; [log](https://drive.google.com/file/d/1BTwm-knCIT-kzkASjWNMfRWaAwI0ONmC/view?usp=sharing)|
+
 
 **Notes:**
 - The MS-train maximum scale range is 1333x[480:960] (`range` mode) and the inference scale keeps 1333x800.
@@ -101,33 +100,6 @@ We also provide the models of RetinaNet, FoveaBox and RepPoints trained with the
 - `use_vfl` flag in those config files controls whether to use the Varifocal Loss in training or not.
 
 
-### VFNetX
-| Backbone     | DCN     | MS <br> train | Training        | Inf <br> scale  | Inf time <br> (fps) | box AP <br> (val) | box AP <br> (test-dev) | &nbsp; &nbsp; Download  &nbsp; &nbsp;  |
-|:------------:|:---------:|:-----------:|:-------------:|:--------------:|:-------------------:|:-----------------:|:----------------------:|:--------------------------------------:|
-| R2-101       | Y       | Y             | 41e + SWA 18e |    1333x800    | 8.0                 | 53.4              | 53.7                   | [model]( https://drive.google.com/file/d/1I_NLVsGb-6p8kildkFYhIVSdpS1nr8Eh/view?usp=sharing) &#124; [config](configs/vfnet/vfnetx_r2_101_fpn_mdconv_c3-c5_mstrain_2x_coco.py)|
-| R2-101       | Y       | Y             | 41e + SWA 18e |    1800x1200   | 4.2                 | 54.5              | **55.1**                   |  |
-
-**Notes:**
-
-We implement some improvements to the original VFNet.  This version of VFNet is called VFNetX and these improvements include:
-
-- PAFPN. We replace the FPN with the [PAFPNX](mmdet/models/necks/pafpnx.py), and apply the DCN and group normalization (GN) in it.
-
-- More and Wider Conv Layers. We stack 4 convolution layers in the detection head, instead of 3 layers in the original VFNet, and increase the original 256 feature channels to 384 channels.
-
-- RandomCrop and Cutout. We employ the random crop and cutout as additional data augmentation methods.
-
-- Wider MSTrain Scale Range and Longer Training. We adopt a wider MSTrain scale range, from 750x500 to 2100x1400, and initially train the VFNet-X for 41 epochs.
-
-- SWA. We apply the technique of Stochastic Weight Averaging (SWA) in training the VFNetX (for another 18 epochs), which brings 1.2 AP gain. Please see our new work of [SWA Object Detection](https://github.com/hyz-xmaster/swa_object_detection) for more details.
-
-- Soft-NMS. We apply soft-NMS in inference.
-
-For more detailed information, please see the [config file](configs/vfnet/vfnetx_r2_101_fpn_mdconv_c3-c5_mstrain_2x_coco.py).
-
-
-
-
 ## Inference
 Assuming you have put the COCO dataset into `data/coco/` and have downloaded the models into the `checkpoints/`, you can now evaluate the models on the COCO val2017 split:
 
@@ -138,6 +110,8 @@ Assuming you have put the COCO dataset into `data/coco/` and have downloaded the
 - If you have less than 8 gpus available on your machine, please change 8 into the number of your gpus.
 - If you want to evaluate a different model, please change the config file (in [configs/vfnet](configs/vfnet)) and corresponding model weights file.
 - Test time augmentation is supported for the VarifocalNet, including multi-scale testing and flip testing. If you are interested, please refer to an example config file [vfnet_r50_fpn_1x_coco_tta.py](https://github.com/hyz-xmaster/VarifocalNet/blob/master/configs/vfnet/vfnet_r50_fpn_1x_coco_tta.py#L80-L83). More information about test time augmentation can be found in the official script [test_time_aug.py](https://github.com/hyz-xmaster/VarifocalNet/blob/master/mmdet/datasets/pipelines/test_time_aug.py).
+
+
 
 
 ## Training

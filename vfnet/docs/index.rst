@@ -6,7 +6,6 @@ Welcome to MMDetection's documentation!
    :caption: Get Started
 
    get_started.md
-   modelzoo_statistics.md
    model_zoo.md
 
 .. toctree::
@@ -32,11 +31,10 @@ Welcome to MMDetection's documentation!
    :maxdepth: 2
    :caption: Notes
 
-   conventions.md
    compatibility.md
    projects.md
    changelog.md
-   faq.md
+   trouble_shooting.md
 
 .. toctree::
    :caption: API Reference
