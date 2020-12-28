@@ -18,8 +18,8 @@ config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TOP_N = 10 
-FPS = 5 
-MIN_SIZE = 25 # 규정은 32px 이지만 안전을 위해 30으로 설정
+FPS = 1 
+MIN_SIZE = 20 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 CONF_TH = 0.0
 
@@ -37,7 +37,7 @@ def to_frame(img_path, infer_result, conf_th = CONF_TH):
     
     bboxes = nms(infer_result)
     if len(bboxes) == 0:
-        return Dict(file_name=Path(img_path).name, box=[])
+        return Dict(file_name=Path(img_path).name, box=[]), 0
     
     
     # 필터링 하는 코드 
@@ -97,7 +97,7 @@ def main():
     frame_results = []
     conf_sums =[] 
     for video in videos:
-        conf_sum = 0
+        conf_sum = 0.0
         frames = sorted(glob(f'{video}/*.jpg'))
         prev_result = Dict(file_name='dummy', box=[])
         for f in frames:
@@ -111,7 +111,7 @@ def main():
                 frame_results.append(t)
         conf_sums.append((conf_sum, f))
     conf_sums = sorted(conf_sums)[:30]
-    print(conf_sums)
+    print('conf_sums:', conf_sums)
     for _, file_name in conf_sums:
         for e in frame_results:
             if e['file_name'] == file_name:
