@@ -18,7 +18,7 @@ config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TOP_N = 10 
-FPS = 1 
+FPS = 10
 MIN_SIZE = 20 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 CONF_TH = 0.0
@@ -52,17 +52,17 @@ def to_frame(img_path, infer_result, conf_th = CONF_TH):
             bboxes_idx.append(i)
     bboxes = bboxes[bboxes_idx]
        
-    conf_sum = 0
+    conf_sum = [0]
     
     # 형식 변환하는 코드
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
         conf = bbox[4]
-        conf_sum += conf
+        conf_sum[0] += conf
         return Dict(position=box, confidence_score=str(conf))
         
     boxes = [to_box(bbox) for bbox in bboxes[::-1]] # 혹시나 몰라서 conf가 높은 것을 앞에 적어 줌
-    return Dict(file_name=Path(img_path).name, box=boxes), conf_sum
+    return Dict(file_name=Path(img_path).name, box=boxes), conf_sum[0]
 
        
 def main():
