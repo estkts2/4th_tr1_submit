@@ -11,6 +11,10 @@ import numpy as np
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 from tqdm.auto import tqdm
 
+import make_coco
+import launch_tool as lt
+
+
 FPS = 5
 TEAM_ID   = 'U0000000217'
 BASE      = '/aichallenge'
@@ -22,6 +26,7 @@ SAVE_PATH = f'./t1_res_{TEAM_ID}.json'
 SAVE_PATH2 = f'{BASE}/t1_res_{TEAM_ID}.json'
 
 no_exception = True
+NUM_GPU = 1
 
 config_file     = f'{BASE}/weights/v4/config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
@@ -59,12 +64,8 @@ def to_frame(img_path, infer_result, conf_th = 0.0):
 
        
 def main():
+    # 데이터 준비
     data_root = Path(sys.argv[1])
-    
-    model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    print('init success')
-    print('config_file:', config_file)
-    print('checkpoint_file:', checkpoint_file)
     
     stride = int(round(15/FPS))
     total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
@@ -72,18 +73,21 @@ def main():
     print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
     print(f'top_{TOP_N}, {FPS}fps, min_size:{MIN_SIZE}')
+
+    #json 포멧으로 변환
+    anno, anno_path, img_base  = make_coco.to_json_format(data_root, sample_imgs)
+
+    # launcher tool을 이용한 실행
+    out_pickle_path = '/aichallenge/temp_dir/aunch_test.pickle'
+    lt.run_test(config_file, checkpoint_file, 
+                out_pickle_path, NUM_GPU)
     
-    sample_results = []
-    
-    for idx, img in enumerate(tqdm(sample_imgs)):
-        result = inference_detector(model, img, 0)
-        sample_results.append(result)
-        
-    df = pd.DataFrame({'image_path':sample_imgs, 'results':sample_results})
-    df = df.sort_values('image_path') 
-    df['name'] = df['image_path'].str.split('/', expand=True).values[:,-1]
-    results_dict = df[['name', 'results']].set_index('name')['results'].to_dict()
-    del df
+    # 결과 로드
+    df = pd.read_pickle(out_pickle_path)
+    pairs = list(zip(anno['images'], df))
+    results = [[Path(img['file_name']).name, bboxes] for img, bboxes in pairs]
+
+    results_dict = {Path(img['file_name']).name: bboxes for img, bboxes in pairs}
     
     videos = sorted(glob(f'{data_root}/*'))
     
