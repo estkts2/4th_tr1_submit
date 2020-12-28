@@ -30,7 +30,7 @@ def to_frame(img_path, infer_result, conf_th = 0.8):
     
     
     bboxes = bboxes[conf_th <= bboxes[:,4]]
-    bboxes = bboxes[bboxes[:,4].argsort()][-2:,:]
+    bboxes = bboxes[bboxes[:,4].argsort()][-1:,:]
     
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
@@ -71,7 +71,7 @@ def main():
     
     frame_results = []
     for video in videos:
-        frames = glob(f'{video}/*.jpg')
+        frames = sorted(glob(f'{video}/*.jpg'))
         prev_result = Dict(file_name='dummy', box=[])
         for f in frames:
             f = Path(f).name
