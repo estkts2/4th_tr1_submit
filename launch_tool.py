@@ -1,4 +1,5 @@
 import os
+import multiprocessing as mp
 
 def run_test(config_file, checkpoint_file,
              out_pickle_path, gpu_order=0):
@@ -13,14 +14,12 @@ def run_test(config_file, checkpoint_file,
     print(cmd)
     os.system(cmd)
     
-
-if __name__ == '__main__':
+def foo(param):
+    run_test(**param)
     
-    config_file     = '/home/kts2/gc2020/weights/v4_fixed_f010203041042060708_lr0.00075_10of30_warm2000_resume_epoch_7_/test_config.py'
-    checkpoint_file = '/home/kts2/gc2020/weights/v4_fixed_f010203041042060708_lr0.00075_10of30_warm2000_resume_epoch_7_/epoch_27.pth'
-    out_pickle_path = './launch_test.pickle'
-    out_jon_prefix = './launch_test'
-    
-    run_test(config_file, checkpoint_file, 
-            out_pickle_path, out_jon_prefix)
+def run_test_mulit(params):
+    pool = mp.Pool(processes=2)
+    pool.map(foo, params)
+    pool.join()
+    pool.close()
     
