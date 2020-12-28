@@ -13,8 +13,6 @@ data = dict(
             dict(
                 type='MultiScaleFlipAug',
                 img_scale=(1920, 1080),
-                #img_scale=(2112, 1188),
-                #img_scale=(2304,1296),
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
                     dict(
