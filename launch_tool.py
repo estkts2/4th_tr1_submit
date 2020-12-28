@@ -17,7 +17,7 @@ def run_test(config_file, checkpoint_file,
     port = get_free_port_()
     
     cmd = f"""python -m torch.distributed.launch --nproc_per_node={num_gpu} --master_port={port}\
-    /home/kts2/gc2020/VarifocalNet/tools/test.py \
+    /root/VarifocalNet/tools/test.py \
     --out {out_pickle_path} \
     --format-only \
     --launcher pytorch \
