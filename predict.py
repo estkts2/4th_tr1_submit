@@ -30,7 +30,7 @@ SAVE_PATH2 = f'{BASE}/t1_res_{TEAM_ID}.json'
 no_exception = True
 NUM_GPU = 1
 
-config_file     = f'{BASE}/weights/v4/config.py'
+config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 
