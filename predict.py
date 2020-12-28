@@ -18,9 +18,8 @@ config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TOP_N = 10 
-FPS = 10
-MIN_SIZE = 20 # 규정은 32px 이지만 안전을 위해 30으로 설정
-
+FPS = 7.5 
+MIN_SIZE = 32 
 CONF_TH = 0.0
 
 print(f'fps({FPS})_topn({TOP_N})_th({CONF_TH:.2f})_minpx({MIN_SIZE})')
@@ -32,49 +31,40 @@ SAVE_PATH = f'{BASE}/t1_res_{TEAM_ID}.json'
 
 def to_frame(img_path, infer_result, conf_th = CONF_TH):
     
-    def nms(r):
-        return r[0]
-    
-    bboxes = nms(infer_result)
+    bboxes = infer_result[0]
     if len(bboxes) == 0:
-        return Dict(file_name=Path(img_path).name, box=[]), 0
+        return Dict(file_name=Path(img_path).name, box=[])
     
     
     # 필터링 하는 코드 
     bboxes = bboxes[conf_th <= bboxes[:,4]]
-    bboxes = bboxes[bboxes[:,4].argsort()]
-    bboxes = bboxes[-TOP_N:,:]
+    bboxes = bboxes[bboxes[:,4].argsort()][-TOP_N:,:]
     #min_filter
     bboxes_idx = []
     for i, box in enumerate(bboxes):
         x1, y1, x2, y2, c = box
-        if MIN_SIZE <= (x2-x1+1) and MIN_SIZE <= (y2-y1+1):
+        if MIN_SIZE <= (x2-x1) and MIN_SIZE <= (y2-y1):
             bboxes_idx.append(i)
     bboxes = bboxes[bboxes_idx]
        
-    conf_sum = [0]
     
     # 형식 변환하는 코드
     def to_box(bbox):
         box  = np.round(bbox[:4]).astype(np.uint).tolist()
         conf = bbox[4]
-        conf_sum[0] += conf
         return Dict(position=box, confidence_score=str(conf))
         
     boxes = [to_box(bbox) for bbox in bboxes[::-1]] # 혹시나 몰라서 conf가 높은 것을 앞에 적어 줌
-    return Dict(file_name=Path(img_path).name, box=boxes), conf_sum[0]
+    return Dict(file_name=Path(img_path).name, box=boxes)
 
        
 def main():
     # 데이터 준비
     data_root = Path(sys.argv[1])
-    total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
     
-    if FPS == 10:
-        sample_imgs = sorted(total_imgs[::3] + total_imgs[1::3])
-    else:
-        stride = int(round(15/FPS))
-        sample_imgs = total_imgs[::stride]
+    stride = int(round(15/FPS))
+    total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
+    sample_imgs = total_imgs[::stride]
     print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
     print(f'top_{TOP_N}, {FPS}fps, min_size:{MIN_SIZE}')
@@ -95,33 +85,21 @@ def main():
     videos = sorted(glob(f'{data_root}/*'))
     
     frame_results = []
-    conf_sums =[] 
     for video in videos:
-        conf_sum = 0.0
         frames = sorted(glob(f'{video}/*.jpg'))
         prev_result = Dict(file_name='dummy', box=[])
         for f in frames:
             f = Path(f).name
             if f in results_dict:
-                prev_result, conf = to_frame(f, results_dict[f])
-                conf_sum += conf
+                prev_result = to_frame(f, results_dict[f])
                 frame_results.append(prev_result)
             else:
                 t = Dict(file_name=f, box=prev_result['box'])
                 frame_results.append(t)
-        conf_sums.append((conf_sum, f))
-    conf_sums = sorted(conf_sums)[:30]
-    print('conf_sums:', conf_sums)
-    for _, file_name in conf_sums:
-        for e in frame_results:
-            if e['file_name'] == file_name:
-                e[box]=[]
-            break
-    
                 
     anno = Dict(annotations=frame_results)
     with open(SAVE_PATH, 'w') as f: 
-        json.dump(anno, f, sort_keys=True)
+        json.dump(anno, f)
     print('success  SAVE_PATH')
     print(f'fps({FPS})_topn({TOP_N})_th({CONF_TH:.2f})_minpx({MIN_SIZE})')
     
