@@ -18,7 +18,7 @@ config_file     = f'{BASE}/weights/v4/test_config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 TOP_N = 10 
-FPS = 15 
+FPS = 10 
 MIN_SIZE = 20 # 규정은 32px 이지만 안전을 위해 30으로 설정
 
 CONF_TH = 0.0
@@ -65,10 +65,13 @@ def to_frame(img_path, infer_result, conf_th = CONF_TH):
 def main():
     # 데이터 준비
     data_root = Path(sys.argv[1])
-    
-    stride = int(round(15/FPS))
     total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
-    sample_imgs = total_imgs[::stride]
+    
+    if FPS == 10:
+        sample_imgs = sorted(total_imgs[::3] + total_imgs[1::3])
+    else:
+        stride = int(round(15/FPS))
+        sample_imgs = total_imgs[::stride]
     print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
     print(f'top_{TOP_N}, {FPS}fps, min_size:{MIN_SIZE}')
