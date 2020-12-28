@@ -53,7 +53,7 @@ def main():
     sample_imgs = total_imgs[::stride]
     print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
-    print(f'stride:{len(total_imgs)/len(sample_imgs)'})
+    print(f'stride:{len(total_imgs)/len(sample_imgs)}')
     
     sample_results = []
     
