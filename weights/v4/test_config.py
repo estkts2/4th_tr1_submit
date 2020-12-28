@@ -5,7 +5,7 @@ model = dict(
 data = dict(
     workers_per_gpu = 1,
     test = dict(
-        samples_per_gpu = 10,
+        samples_per_gpu = 6,
         ann_file   = '/aichallenge/temp_dir/4th_anno.json',
         img_prefix = '/aichallenge/temp_dir/4th_dataset',
         pipeline=[
@@ -13,7 +13,8 @@ data = dict(
             dict(
                 type='MultiScaleFlipAug',
                 #img_scale=(1920, 1080),
-                img_scale=(2112, 1188),
+                #img_scale=(2112, 1188),
+                img_scale=(2304,1296),
                 transforms=[
                     dict(type='Resize', keep_ratio=True),
                     dict(
