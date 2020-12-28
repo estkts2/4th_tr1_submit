@@ -1,5 +1,7 @@
 import os
 import json
+import shutil
+
 import imagesize
 from pathlib import Path
 from tqdm.auto import tqdm
@@ -37,11 +39,15 @@ def to_json_format(img_base_dir, img_list):
         
     # 이미지 root aliasing
     ln_img_prefix = '/aichallenge/temp_dir/4th_dataset'
+    
+    # 혹시 있을지도 모를 이전 데이터 삭제
     try:
         os.unlink(ln_img_prefix)
     except:
         pass
+    shutil.rmtree(ln_img_prefix, ignore_errors=True)
     
+    # aliasing
     cmd = f'ln -s {img_base_dir} {ln_img_prefix}'
     os.system(cmd)
     
