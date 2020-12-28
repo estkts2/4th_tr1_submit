@@ -3,7 +3,7 @@ model = dict(
     pretrained = None
 )
 data = dict(
-    workers_per_gpu = 1,
+    workers_per_gpu = 0,
     test = dict(
         samples_per_gpu = 12,
         ann_file   = '/aichallenge/temp_dir/4th_anno.json',
