@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0,1 tools/dist_train.sh configs/vfnet/vfnet_r2_101_fpn_mdconv_c3-c5_mstrain_2x_coco.py 2  --work-dir runs_iitp_1fps_16fp/960p_lr0.00075_8of30_warm1000_loadfrom4ep
