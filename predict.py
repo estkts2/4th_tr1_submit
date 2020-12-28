@@ -27,7 +27,11 @@ config_file     = f'{BASE}/weights/v4/config.py'
 checkpoint_file = f'{BASE}/weights/v4/epoch_27.pth'
 
 def to_frame(img_path, infer_result, conf_th = 0.0):
-    bboxes = np.vstack(infer_result)
+    
+    def nms(r):
+        return r[0]
+    
+    bboxes = nms(iner_result)
     if len(bboxes) == 0:
         return Dict(file_name=Path(img_path).name, box=[])
     
