@@ -7,6 +7,7 @@ from collections import OrderedDict as Dict
 import shutil
 
 import pandas as pd
+import numpy as np
 from mmdet.apis import init_detector, inference_detector, show_result_pyplot
 from tqdm.auto import tqdm
 
@@ -48,8 +49,11 @@ def main():
     
     fps = 1
     stride = int(round(15/fps))
-    sample_imgs = sorted(glob(f'{data_root}/*/*.jpg'))[::stride]
+    total_imgs = sorted(glob(f'{data_root}/*/*.jpg'))
+    sample_imgs = total_imgs[::stride]
+    print(f'len(total):{len(total_imgs)}')
     print(f'len(sample):{len(sample_imgs)}')
+    print(f'stride:{len(total_imgs)/len(sample_imgs)'})
     
     sample_results = []
     
